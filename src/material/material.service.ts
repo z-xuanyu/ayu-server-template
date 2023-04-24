@@ -18,12 +18,12 @@ export class MaterialService {
 
   async findAll(parameters: QueryMaterialDto) {
     if (!parameters.type) parameters.type = 'image';
-    if(parameters.cid === 'null') parameters.cid = null;
     const query = {
       name: { $regex: new RegExp(parameters.name, 'i') },
       type: parameters.type,
-      cid: parameters.cid ? parameters.cid : { $ne: null }
+      cid: parameters.cid,
     };
+    if (parameters.cid === 'null' || !parameters.cid) delete query.cid;
     const total = await this.materialModel.countDocuments(query);
     const list = await this.materialModel
       .find(query)

@@ -82,11 +82,10 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '获取管理端登录人信息' })
   async getUserInfo(@CurrentUser() user: AdminDocument) {
-    const id: string = String(user._id);
-    const res = await this.adminService.findOne(id)
+    const id = String(user._id);
+    const res = await this.adminService.findOne(id);
     return apiSucceed(res);
   }
-  
 
   @ApiOperation({ summary: 'web站--会员登录' })
   @Post('web/login')
@@ -141,7 +140,6 @@ export class AuthController {
     type: FileUploadDto,
   })
   async uploadImage(@UploadedFile() file, @Req() req, @Param('id') id: string) {
-    console.log(id, '参数')
     const domain = `${req.protocol}://${req.headers.host}`;
     const url = `${domain}/${file.path.replaceAll('\\', '/')}`;
     const data: CreateMaterialDto = {
