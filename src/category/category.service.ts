@@ -58,11 +58,29 @@ export class CategoryService {
         },
       },
       {
+        $lookup: {
+          from: 'categories',
+          localField: 'pid',
+          foreignField: '_id',
+          as: 'parent',
+        },
+      },
+      {
+        $unwind: {
+          path: '$parent',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $project: {
           name: 1,
           sort: 1,
+          pid: 1,
+          parent: 1,
           status: 1,
           articleCount: { $size: '$articles' },
+          updatedAt: 1,
+          createdAt: 1,
         },
       },
       { $skip: ~~((parameters.pageNumber - 1) * parameters.pageSize) },
