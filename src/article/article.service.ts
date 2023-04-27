@@ -17,6 +17,8 @@ export class ArticleService {
   }
 
   async findAll(parameters: QueryArticleDto) {
+    if(!parameters.pageNumber) parameters.pageNumber = 1;
+    if(!parameters.pageSize) parameters.pageSize = 10;
     const query = {
       $and: [
         { title: { $regex: new RegExp(parameters.title, 'i') } },
@@ -24,12 +26,27 @@ export class ArticleService {
       ],
     };
     const total = await this.articleModel.countDocuments(query);
-    const list = await this.articleModel
-      .find(query)
-      .limit(~~parameters.pageSize)
-      .skip(~~((parameters.pageNumber - 1) * parameters.pageSize))
-      .exec();
-
+    const list = await this.articleModel.aggregate([
+      {
+        $match: query,
+      },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'categoryId',
+          foreignField: '_id',
+          as: 'category',
+        },
+      },
+      {
+        $unwind: {
+          path: '$category',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      { $skip: ~~((parameters.pageNumber - 1) * parameters.pageSize) },
+      { $limit: ~~parameters.pageSize },
+    ])
     return {
       total,
       items: list,
@@ -38,6 +55,7 @@ export class ArticleService {
 
   async findOne(id: string) {
     const info = await this.articleModel.findById(id);
+    // await this.articleModel.findByIdAndUpdate(id, { $inc: { views: 1 } })
     return info;
   }
 
