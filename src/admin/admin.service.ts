@@ -30,6 +30,7 @@ export class AdminService {
    * @memberof AdminService
    */
   async create(createAdminDto: CreateAdminDto): Promise<Admin> {
+    delete (createAdminDto as any)._id;
     const isHasEmail = await this.adminModel.findOne({
       email: createAdminDto.email,
     });
@@ -93,7 +94,13 @@ export class AdminService {
    * @memberof AdminService
    */
   async update(id: string, updateAdminDto: UpdateAdminDto): Promise<Admin> {
-    return this.adminModel.findByIdAndUpdate(id, updateAdminDto);
+    delete (updateAdminDto as any).password;
+    const info = await this.adminModel.findOne({ phone: updateAdminDto.phone });
+    if (info && info._id.toString() !== id) {
+      throw new ApiFail(101, '手机号已经存在!');
+    }
+    await this.adminModel.findByIdAndUpdate(id, updateAdminDto);
+    return info;
   }
 
   /**

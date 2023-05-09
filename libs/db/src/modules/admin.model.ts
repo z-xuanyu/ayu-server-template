@@ -7,6 +7,7 @@
  * @LastEditTime: 2021-12-24 17:23:23
  * @Description: 管理员模型
  */
+import { GenderEnum } from '@app/common/enums/GenderEnum';
 import { ApiProperty } from '@nestjs/swagger';
 import { prop, ModelOptions, DocumentType } from '@typegoose/typegoose';
 
@@ -28,8 +29,12 @@ export class Admin {
   email: string;
 
   @ApiProperty({ title: '头像' })
-  @prop()
+  @prop({ default: '' })
   avatar: string;
+
+  @ApiProperty({ title: '手机号' })
+  @prop({ type: String, unique: true, default: null })
+  phone: string | null;
 
   @ApiProperty({ title: '密码' })
   @prop({
@@ -43,6 +48,12 @@ export class Admin {
     },
   })
   password: string;
+
+  @ApiProperty({
+    title: '性别',
+  })
+  @prop({ default: GenderEnum.MAN })
+  gender: GenderEnum;
 
   @ApiProperty({ title: '状态' })
   @prop({ default: true })

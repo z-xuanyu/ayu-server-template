@@ -45,6 +45,7 @@ import { Get } from '@nestjs/common/decorators';
 import { AdminService } from 'src/admin/admin.service';
 import { CurrentUser } from './current-user.decorator';
 import { AdminDocument } from '@app/db/modules/admin.model';
+import { CreateAdminDto } from 'src/admin/dto/create-admin.dto';
 
 @ApiTags('登录')
 @Controller('auth')
@@ -56,6 +57,13 @@ export class AuthController {
     private materialService: MaterialService,
     private adminService: AdminService,
   ) {}
+
+  @ApiOperation({ summary: '管理站--注册' })
+  @Post()
+  async regAdmin(@Body() regDto: CreateAdminDto) {
+    const res = await this.adminService.create(regDto);
+    return apiSucceed(res);
+  }
 
   @ApiOperation({ summary: '管理站--登录' })
   @Post('admin/login')

@@ -8,11 +8,7 @@
  * @Description: 管理员控制器
  */
 import { ParseIdPipe } from '@app/common/pipe/parse-id.pipe';
-import {
-  apiSucceed,
-  ApiSucceedResult,
-  PaginationResult,
-} from '@app/common/ResponseResultModel';
+import { apiSucceed, ApiSucceedResult } from '@app/common/ResponseResultModel';
 import { Admin } from '@app/db/modules/admin.model';
 import {
   Controller,
@@ -55,9 +51,7 @@ export class AdminController {
 
   @Get()
   @ApiOperation({ summary: '管理员列表' })
-  async findAll(
-    @Query() parameter: QueryAdminDto,
-  ): Promise<ApiSucceedResult<PaginationResult<Array<Admin>>>> {
+  async findAll(@Query() parameter: QueryAdminDto) {
     const res = await this.adminService.findAll(parameter);
     return apiSucceed(res);
   }
