@@ -9,7 +9,7 @@ import { Category } from './category.model';
 })
 export class Article {
   @ApiProperty({ title: '文章标题' })
-  @prop()
+  @prop({ required: true })
   title: string;
 
   @ApiProperty({ title: '封面图' })
@@ -17,11 +17,11 @@ export class Article {
   cover: string;
 
   @ApiProperty({ title: '文章简介' })
-  @prop()
+  @prop({ type: String, default: '' })
   desc: string;
 
   @ApiProperty({ title: '文章摘要' })
-  @prop()
+  @prop({ type: String, default: '' })
   digest: string;
 
   @ApiProperty({ title: '文章作者' })
@@ -29,11 +29,11 @@ export class Article {
   author: string;
 
   @ApiProperty({ title: '文章内容' })
-  @prop({ type: String })
+  @prop({ type: String, default: '' })
   content: string;
 
   @ApiProperty({ title: '分类ID' })
-  @prop({ ref: () => Category })
+  @prop({ ref: () => Category, required: true })
   categoryId: Ref<Category>;
 
   @ApiProperty({ title: '浏览量' })
@@ -44,7 +44,7 @@ export class Article {
   @prop({ type: Number, default: 0 })
   sort: number;
 
-  @ApiProperty({ title: '排序' })
+  @ApiProperty({ title: '状态' })
   @prop({ type: Boolean, default: true })
   status: boolean;
 }

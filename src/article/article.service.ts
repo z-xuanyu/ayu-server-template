@@ -4,6 +4,7 @@ import { ReturnModelType } from '@typegoose/typegoose';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { QueryArticleDto } from './dto/query-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class ArticleService {
@@ -17,14 +18,24 @@ export class ArticleService {
   }
 
   async findAll(parameters: QueryArticleDto) {
-    if(!parameters.pageNumber) parameters.pageNumber = 1;
-    if(!parameters.pageSize) parameters.pageSize = 10;
-    const query = {
-      $and: [
-        { title: { $regex: new RegExp(parameters.title, 'i') } },
-        { status: parameters.status ?? { $ne: parameters.status } },
-      ],
+    if (!parameters.pageNumber) parameters.pageNumber = 1;
+    if (!parameters.pageSize) parameters.pageSize = 10;
+    if (parameters.status === 'true') parameters.status = true;
+    if (parameters.status === 'false') parameters.status = false;
+    const query: any = {
+      // 模糊查询标题
+      title: { $regex: new RegExp(parameters.title, 'i') },
     };
+    // 查询状态
+    if (!['', null, 'null', undefined].includes(parameters.status as any)) {
+      query.status = { $exists: parameters.status };
+    }
+
+    // 查询分类
+    if (parameters.categoryId) {
+      query.categoryId = new ObjectId(parameters.categoryId);
+    }
+    console.log(query, 4555);
     const total = await this.articleModel.countDocuments(query);
     const list = await this.articleModel.aggregate([
       {
@@ -46,7 +57,7 @@ export class ArticleService {
       },
       { $skip: ~~((parameters.pageNumber - 1) * parameters.pageSize) },
       { $limit: ~~parameters.pageSize },
-    ])
+    ]);
     return {
       total,
       items: list,

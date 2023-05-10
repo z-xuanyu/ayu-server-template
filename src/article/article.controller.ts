@@ -40,7 +40,6 @@ export class ArticleController {
   @ApiOperation({ summary: '文章列表' })
   async findAll(@Query() parameters: QueryArticleDto) {
     const { pageNumber = 1, pageSize = 10 } = parameters;
-    console.log(pageNumber, pageSize, 999);
     const res = await this.articleService.findAll({
       ...parameters,
       pageNumber,
